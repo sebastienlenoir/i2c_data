@@ -1,0 +1,5 @@
+i2cdevice==1.0.0
+icm20948==0.0.2
+pimoroni-bme280==1.0.0
+smbus==1.1.post2
+smbus2==0.4.3
