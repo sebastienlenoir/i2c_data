@@ -2,9 +2,7 @@
 name = "aselo_i2c_data"
 version = "0.1.0"
 description = "A small example package"
-readme = "README.txt"
 requires-python = ">=3.8"
-license = "GPLv2"
 authors = [{ name = "Sébastien LENOIR", email = "sebastien.lenoir@aselo.fr" }]
 
 classifiers = [
