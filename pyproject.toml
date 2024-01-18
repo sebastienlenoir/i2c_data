@@ -1,7 +1,7 @@
 [project]
 name = "aselo_i2c_data"
 version = "0.1.0"
-description = "A small example package"
+description = "BME280 & ICM20948 i2c reader to UDP"
 requires-python = ">=3.8"
 authors = [{ name = "Sébastien LENOIR", email = "sebastien.lenoir@aselo.fr" }]
 
@@ -25,5 +25,5 @@ Issues = "https://github.com/sebastienlenoir/i2c_data/issues"
 
 [build-system]
 # These are the assumed default build requirements from pip:
-requires = ["setuptools>=61.0.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
