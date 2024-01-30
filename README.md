@@ -49,18 +49,19 @@ Pour activer dans l'interface i2c dans raspi-config, il faut :
 
 L'installation du programme suit la procédure suivante:
 
-1. Créer un dossier projection dans le dossier utilisateur `/home/<user>`
-1. Copier les fichiers *read-all.py* et *requirements.txt* dans le dossier`/home/<user>/projection`
-1. Créer un environnement de travail virtuel **venv**
+1. Créer un dossier *bin* dans le dossier utilisateur `/home/<user>`
+1. Accéder au nouveau dossier `/home/<user>/bin`
+2. Cloner le dépôt github avec la commande `git clone https://github.com/sebastienlenoir/i2c_data.git` 
+4. Créer un environnement de travail virtuel **venv**
    
 	```shell
-	cd projection
-	python3 -m venv venv
-	. venv/bin/activate
+	cd i2c_data
+	python3 -m venv .venv
+	. .venv/bin/activate
 	pip3 install -r requirements.txt
 	```
 	
-1. Créer un fichier `i2cdata.service` de service pour systemd dans le dossier `/etc/systemd/system`
+5. Créer un fichier `i2cdata.service` de service pour systemd dans le dossier `/etc/systemd/system`
 
 	```service
 	[Unit]
@@ -68,21 +69,21 @@ L'installation du programme suit la procédure suivante:
 
 	[Service]
 	User=pi
-	WorkingDirectory=/home/pi/projection
+	WorkingDirectory=/home/pi/bin/i2c_data
 	Restart=on-failure
 	RestartSec=5s
-	ExecStart=/home/pi/projection/bin/python3 -m i2c_data.py
+	ExecStart=/home/pi/bin/i2c_data/.venv/bin/python3 -m i2c_data.py
 
 	[Install]
 	WantedBy=multi-user.target
 	```
-1. Démarrer le service avec la commande: suivantes pour démarrer et ajouter le service au démarrage du système
+6. Démarrer le service avec la commande: suivantes pour démarrer et ajouter le service au démarrage du système
 
 	```shell
 	sudo systemctl start i2cdata.service
 	```
 
-1. Ajout le service au démarrage du Raspberry
+7. Ajout le service au démarrage du Raspberry
 
 	```shell
 	sudo systemctl enable i2cdata.service
