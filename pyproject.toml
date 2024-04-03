@@ -1,0 +1,30 @@
+[project]
+name = "aselo_i2c_data"
+version = "0.1.0"
+description = "BME280 & ICM20948 i2c reader to UDP"
+requires-python = ">=3.8"
+authors = [{ name = "Sébastien LENOIR", email = "sebastien.lenoir@aselo.fr" }]
+readme = "README.md"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [ # Optional
+    "i2cdevice==1.0.0",
+    "icm20948==0.0.2",
+    "pimoroni-bme280==1.0.0",
+    "smbus==1.1.post2",
+    "smbus2==0.4.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/sebastienlenoir/i2c_data"
+Issues = "https://github.com/sebastienlenoir/i2c_data/issues"
+
+[build-system]
+# These are the assumed default build requirements from pip:
+requires = ["setuptools >= 61.0", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
