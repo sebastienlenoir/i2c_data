@@ -24,6 +24,9 @@ dependencies = [ # Optional
 Homepage = "https://github.com/sebastienlenoir/i2c_data"
 Issues = "https://github.com/sebastienlenoir/i2c_data/issues"
 
+[project.scripts]
+i2c-data = "i2c_data.i2c_data:main"
+
 [build-system]
 # These are the assumed default build requirements from pip:
 requires = ["setuptools >= 61.0", "setuptools-scm"]
