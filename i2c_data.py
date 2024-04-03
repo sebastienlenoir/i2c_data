@@ -22,6 +22,10 @@ from icm20948 import ICM20948
 from smbus2 import SMBus
 from bme280 import BME280
 
+UDP_IP = "127.0.0.1"
+UDP_PORT = 5005
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 imu = ICM20948(i2c_addr=0x69)
 bus = SMBus(1)
@@ -58,55 +62,51 @@ class Payload:
   def toJson(self):
     return json.dumps(self, default=lambda o: o.__dict__)
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 5005
+if __name__ == "__main__" :
+  while True:
+    # Read magnetometer data from ICM20948
+    try:
+      x, y, z = imu.read_magnetometer_data()
+    except Exception as error:
+      print('An error occured when reading magnetometer data:', error)
+      x, y, z = 9999, 9999, 9999
+    
+    # Read accelerometer & gyro data from ICM20948
+    try:
+      ax, ay, az, gx, gy, gz = imu.read_accelerometer_gyro_data()
+    except Exception as error:
+      print('An error occured when reading accelerometer & gyro data:', error)
+      ax, ay, az, gx, gy, gz = 9999, 9999, 9999, 9999, 9999, 9999
+    
+    # Read temperature value from BME280
+    try:
+      t = bme280.get_temperature()
+    except Exception as error:
+      print('An error occured when reading temperature value on BME280:', error)
+      t = 9999
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # Read pressure value from BME280
+    try:
+      p = bme280.get_pressure()
+    except Exception as error:
+      print('An error occured when reading pressure value on BME280:', error)
+      p = 9999
 
-while True:
-  # Read magnetometer data from ICM20948
-  try:
-    x, y, z = imu.read_magnetometer_data()
-  except Exception as error:
-    print('An error occured when reading magnetometer data:', error)
-    x, y, z = 9999, 9999, 9999
-  
-  # Read accelerometer & gyro data from ICM20948
-  try:
-    ax, ay, az, gx, gy, gz = imu.read_accelerometer_gyro_data()
-  except Exception as error:
-    print('An error occured when reading accelerometer & gyro data:', error)
-    ax, ay, az, gx, gy, gz = 9999, 9999, 9999, 9999, 9999, 9999
-  
-  # Read temperature value from BME280
-  try:
-    t = bme280.get_temperature()
-  except Exception as error:
-    print('An error occured when reading temperature value on BME280:', error)
-    t = 9999
-
-  # Read pressure value from BME280
-  try:
-    p = bme280.get_pressure()
-  except Exception as error:
-    print('An error occured when reading pressure value on BME280:', error)
-    p = 9999
-
-  # Read humidity value from BME280
-  try:
-    h = bme280.get_humidity()
-  except Exception as error:
-    print('An error occured when reading humidity value on BME280:', error)
-    h = 9999
-  
-  # Build payload from collected values
-  payload = Payload(temperature = t, pressure = p, humidity = h,
-                    gyroscope_x = gx, gyroscope_y = gy, gyroscope_z = gz,
-                    accelerometer_x = ax, accelerometer_y = ay, accelerometer_z = az,
-                    magnetometer_x = x, magnetometer_y = y, magnetometer_z = z)
-  
-  # Convert Payload to JSON and send it over UDP
-  MESSAGE = payload.toJson()
-  sock.sendto(MESSAGE.encode('utf-8'), (UDP_IP, UDP_PORT))
-  
-  time.sleep(0.01)
+    # Read humidity value from BME280
+    try:
+      h = bme280.get_humidity()
+    except Exception as error:
+      print('An error occured when reading humidity value on BME280:', error)
+      h = 9999
+    
+    # Build payload from collected values
+    payload = Payload(temperature = t, pressure = p, humidity = h,
+                      gyroscope_x = gx, gyroscope_y = gy, gyroscope_z = gz,
+                      accelerometer_x = ax, accelerometer_y = ay, accelerometer_z = az,
+                      magnetometer_x = x, magnetometer_y = y, magnetometer_z = z)
+    
+    # Convert Payload to JSON and send it over UDP
+    MESSAGE = payload.toJson()
+    sock.sendto(MESSAGE.encode('utf-8'), (UDP_IP, UDP_PORT))
+    
+    time.sleep(0.01)
