@@ -27,9 +27,17 @@ UDP_PORT = 5005
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-imu = ICM20948(i2c_addr=0x69)
-bus = SMBus(1)
-bme280 = BME280(i2c_dev=bus, i2c_addr=0x77)
+
+try:
+  imu = ICM20948(i2c_addr=0x69)
+except:
+  imu = None
+try:
+  bus = SMBus(1)
+  bme280 = BME280(i2c_dev=bus, i2c_addr=0x77)
+except:
+  bus = None
+  bme280 = None
 
 class Payload:
   temperature: float
@@ -66,38 +74,49 @@ if __name__ == "__main__" :
   while True:
     # Read magnetometer data from ICM20948
     try:
-      x, y, z = imu.read_magnetometer_data()
+      if imu != None:
+        x, y, z = imu.read_magnetometer_data()
+      else:
+        print('magnetometer not initialized:')
+        x, y, z = -999.99, -999.99, -999.99
     except Exception as error:
       print('An error occured when reading magnetometer data:', error)
-      x, y, z = 9999, 9999, 9999
+      x, y, z = -999.99, -999.99, -999.99
     
     # Read accelerometer & gyro data from ICM20948
     try:
-      ax, ay, az, gx, gy, gz = imu.read_accelerometer_gyro_data()
+      if imu != None:
+        ax, ay, az, gx, gy, gz = imu.read_accelerometer_gyro_data()
+      else:
+        print('accelerometer & gyrometer not initialized:')
+        ax, ay, az, gx, gy, gz = -999.99, -999.99, -999.99, -999.99, -999.99, -999.99
     except Exception as error:
       print('An error occured when reading accelerometer & gyro data:', error)
-      ax, ay, az, gx, gy, gz = 9999, 9999, 9999, 9999, 9999, 9999
+      ax, ay, az, gx, gy, gz = -999.99, -999.99, -999.99, -999.99, -999.99, -999.99
     
     # Read temperature value from BME280
-    try:
-      t = bme280.get_temperature()
-    except Exception as error:
-      print('An error occured when reading temperature value on BME280:', error)
-      t = 9999
+    if bme280 != None:
+      try:
+        t = bme280.get_temperature()
+      except Exception as error:
+        print('An error occured when reading temperature value on BME280:', error)
+        t = -999.99
 
-    # Read pressure value from BME280
-    try:
-      p = bme280.get_pressure()
-    except Exception as error:
-      print('An error occured when reading pressure value on BME280:', error)
-      p = 9999
+      # Read pressure value from BME280
+      try:
+        p = bme280.get_pressure()
+      except Exception as error:
+        print('An error occured when reading pressure value on BME280:', error)
+        p = -999.99
 
-    # Read humidity value from BME280
-    try:
-      h = bme280.get_humidity()
-    except Exception as error:
-      print('An error occured when reading humidity value on BME280:', error)
-      h = 9999
+      # Read humidity value from BME280
+      try:
+        h = bme280.get_humidity()
+      except Exception as error:
+        print('An error occured when reading humidity value on BME280:', error)
+        h = -999.99
+    else:
+      t, p, h = -999.99, -999.99, -999.99
     
     # Build payload from collected values
     payload = Payload(temperature = t, pressure = p, humidity = h,
